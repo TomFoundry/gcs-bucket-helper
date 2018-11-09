@@ -1,0 +1,19 @@
+[prune]
+  go-tests = true
+  unused-packages = true
+
+[[constraint]]
+  name = "cloud.google.com/go"
+  version = "v0.31.0"
+
+[[constraint]]
+  name = "google.golang.org/api"
+  branch = "master"
+
+[[constraint]]
+  name = "golang.org/x/oauth2"
+  branch = "master"
+
+[[constraint]]
+  name = "github.com/google/uuid"
+  version = "^1.0.0"
