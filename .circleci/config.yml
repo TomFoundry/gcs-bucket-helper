@@ -1,0 +1,126 @@
+version: 2
+jobs:
+  setup:
+    working_directory: /go/src/github.com/athera-io/gcs-bucket-helper
+    docker:
+      - image: golang:1.10
+    steps:
+      - checkout
+      - run: |
+             curl -fL -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.5.0/dep-linux-amd64
+             chmod +x /usr/local/bin/dep
+      - restore_cache:
+          keys:
+          - v1-dep-gcs-bucket-helper-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+      - run: dep ensure -vendor-only
+      - save_cache:
+          key: v1-dep-gcs-bucket-helper-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+          paths:
+            - vendor
+  build_linux:
+    working_directory: /go/src/github.com/athera-io/gcs-bucket-helper
+    docker:
+      - image: golang:1.10
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dep-gcs-bucket-helper-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+      - run: 
+          name: "Builds for Linux and saves it for later"
+          command: |
+            BUILD_TIME=`date +%FT%T%z`
+            APP_PATH=github.com/athera-io/gcs-bucket-helper
+            APP_VENDOR_PATH=$APP_PATH/vendor
+            APP_BUILD_TAGS="-X main.appID=${APP_ID} -X main.appPseudoSecret=${APP_PSEUDO_SECRET}"
+            CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags "${APP_BUILD_TAGS}" ./cmd/gcs-bucket-helper
+            mkdir -p ./artifacts/
+            cp gcs-bucket-helper ./artifacts/gcs-helper_linux_amd64
+      - persist_to_workspace:
+          root: .
+          paths:
+          - ./artifacts/
+  build_darwin:
+    working_directory: /go/src/github.com/athera-io/gcs-bucket-helper
+    docker:
+      - image: golang:1.10
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dep-gcs-bucket-helper-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+      - run:
+          name: "Builds for MacOS and saves it for later"
+          command: |
+            BUILD_TIME=`date +%FT%T%z`
+            APP_PATH=github.com/athera-io/gcs-bucket-helper
+            APP_VENDOR_PATH=$APP_PATH/vendor
+            APP_BUILD_TAGS="-X main.appID=${APP_ID} -X main.appPseudoSecret=${APP_PSEUDO_SECRET}"
+            CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -ldflags "${APP_BUILD_TAGS}" ./cmd/gcs-bucket-helper
+            mkdir -p ./artifacts
+            cp gcs-bucket-helper ./artifacts/gcs-helper_darwin_amd64
+      - persist_to_workspace:
+          root: .
+          paths:
+          - ./artifacts/
+  build_windows:
+    working_directory: /go/src/github.com/athera-io/gcs-bucket-helper
+    docker:
+      - image: golang:1.10
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dep-gcs-bucket-helper-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+      - run:
+          name: "Builds for Windows and saves it for later"
+          command: |
+            BUILD_TIME=`date +%FT%T%z`
+            APP_PATH=github.com/athera-io/gcs-bucket-helper
+            APP_VENDOR_PATH=$APP_PATH/vendor
+            APP_BUILD_TAGS="-X main.appID=${APP_ID} -X main.appPseudoSecret=${APP_PSEUDO_SECRET}"
+            CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -a -ldflags "${APP_BUILD_TAGS}" ./cmd/gcs-bucket-helper
+            mkdir -p ./artifacts
+            cp gcs-bucket-helper.exe ./artifacts/gcs-helper_windows_amd64.exe
+      - persist_to_workspace:
+          root: .
+          paths:
+          - ./artifacts/
+  upload_them_all:
+    working_directory: /go/src/github.com/athera-io/gcs-bucket-helper
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Gets GHR and uploads artifacts to Github"
+          command: |
+            ls -laR;
+            VERSION=${CIRCLE_TAG}
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} artifacts
+workflows:
+  version: 2
+  build_gcs_helper:
+    jobs:
+      - setup
+      - build_linux:
+          requires:
+          - setup
+      - build_darwin:
+          requires:
+          - setup
+      - build_windows:
+          requires:
+          - setup
+      - upload_them_all:
+          requires:
+            - build_linux
+            - build_darwin
+            - build_windows
+          # This job runs for no branches and only for version tags following the x.y.z format
+          filters:
+            branches:
+                ignore: /.*/
+            tags:
+              only: /^v?\d+\.\d+\.\d+$/
