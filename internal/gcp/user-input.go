@@ -26,8 +26,9 @@ OUTER:
 		s = strings.TrimSuffix(s, "\n")
 
 		for _, validator := range inputValidators {
-			if err := validator.validatorFunc(s); err != nil {
-				fmt.Println(validator.failMessage)
+			if err := validator(s); err != nil {
+				fmt.Println(err)
+				fmt.Println("Please try again")
 				continue OUTER
 			}
 		}
@@ -36,9 +37,4 @@ OUTER:
 	}
 }
 
-type inputValidator struct {
-	validatorFunc inputValidatorFunc
-	failMessage   string
-}
-
-type inputValidatorFunc func(string) error
+type inputValidator func(string) error
