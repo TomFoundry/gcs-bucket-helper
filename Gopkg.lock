@@ -37,12 +37,12 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:e145e9710a10bc114a6d3e2738aadf8de146adaa031854ffdf7bbfe15da85e63"
+  digest = "1:e04cc716992a302cacf6d726409a05aa9546241998b24356d6dd0f01bc5a374e"
   name = "github.com/googleapis/gax-go"
   packages = ["."]
   pruneopts = "UT"
-  revision = "317e0006254c44a0ac427cc52a0e083ff0b9622f"
-  version = "v2.0.0"
+  revision = "b001040cd31805261cbd978842099e326dfa857b"
+  version = "v2.0.2"
 
 [[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
@@ -78,7 +78,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cb50171ec1782317a86709fce896e4f564a35ceece954561288afa5948cf5856"
+  digest = "1:29fe5460430a338b64f4a0259a6c59a1e2350bbcff54fa66f906fa8d10515c4d"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -91,11 +91,11 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "22700d5518f6200cd1355b9d417285458095e8da"
+  revision = "351d144fa1fc0bd934e2408202be0c29f25e35a0"
 
 [[projects]]
   branch = "master"
-  digest = "1:72cbc048d28b999f0d088cf89c46e0a64d9150d20af059ff604151a89176846b"
+  digest = "1:23443edff0740e348959763085df98400dcfd85528d7771bb0ce9f5f2754ff4a"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
@@ -105,15 +105,15 @@
     "jwt",
   ]
   pruneopts = "UT"
-  revision = "5a69e67f3fa6ce11b512c271912d08ac74da7c7f"
+  revision = "d668ce993890a79bda886613ee587a69dd5da7a6"
 
 [[projects]]
   branch = "master"
-  digest = "1:35560529f5721d65f36dc23aa15fbf7306c5091cdc3f29f65881af5031b80cc8"
+  digest = "1:9399de11945e643d7131cf070736122b76800d92d57a80494bd9a4e73e6979f3"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "9b800f95dbbc54abff0acf7ee32d88ba4e328c89"
+  revision = "a5c9d58dba9a56f97aaa86f55e638b718c5a6c42"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -140,7 +140,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bb22de48a45f4225bcc18a95794c1c09acddb3cfb6193b0f5cb5f2b1fde127ce"
+  digest = "1:1dae4300f11756bcdd686d9470de6e7fae5da04104ad9a8f3dd2890b7f30d252"
   name = "google.golang.org/api"
   packages = [
     "gensupport",
@@ -157,7 +157,7 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = "UT"
-  revision = "61ce27ee815477c00dd67999c908f22cbf3da017"
+  revision = "6142e720c068c6cd71f2258e007ff1991572e1d5"
 
 [[projects]]
   digest = "1:b13819327be647014031c6a194299da87ca35313bfc01fdc1da7bd3ddf08cbce"
@@ -182,7 +182,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:630f625475f0eeabb00608716d0e4dc2a01b02da810b05c3f89362e6f91ed37b"
+  digest = "1:f852b76248be64fbcf3a8a73c5b3149f3bbcb9e5b5f0f6ed87c0fc59715743e1"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -193,28 +193,33 @@
     "protobuf/field_mask",
   ]
   pruneopts = "UT"
-  revision = "b69ba1387ce2108ac9bc8e8e5e5a46e7d5c72313"
+  revision = "bd91e49a0898e27abb88c339b432fa53d7497ac0"
 
 [[projects]]
-  digest = "1:1ac2802a1ffa70fe39243e22aab53dd3386396fc98de2417ff744d87b079e78c"
+  digest = "1:3fc54ad826c0183f803bb97e0927dfc05fcb7b7a6ddabed646ee8184d861fa9b"
   name = "google.golang.org/grpc"
   packages = [
     ".",
     "balancer",
     "balancer/base",
     "balancer/roundrobin",
+    "binarylog/grpc_binarylog_v1",
     "codes",
     "connectivity",
     "credentials",
+    "credentials/internal",
     "credentials/oauth",
     "encoding",
     "encoding/proto",
     "grpclog",
     "internal",
     "internal/backoff",
+    "internal/binarylog",
     "internal/channelz",
     "internal/envconfig",
     "internal/grpcrand",
+    "internal/grpcsync",
+    "internal/syscall",
     "internal/transport",
     "keepalive",
     "metadata",
@@ -228,8 +233,8 @@
     "tap",
   ]
   pruneopts = "UT"
-  revision = "2e463a05d100327ca47ac218281906921038fd95"
-  version = "v1.16.0"
+  revision = "df014850f6dee74ba2fc94874043a9f3f75fbfd8"
+  version = "v1.17.0"
 
 [solve-meta]
   analyzer-name = "dep"

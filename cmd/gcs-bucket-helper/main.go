@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/athera-io/gcs-bucket-helper/internal/server"
@@ -15,8 +14,6 @@ var (
 )
 
 func main() {
-
-	fmt.Println("appID: ", appID)
 
 	serv := server.New("8001", appID, appPseudoSecret)
 

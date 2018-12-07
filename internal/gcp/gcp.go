@@ -61,84 +61,81 @@ func fillDoData(ctx context.Context, storageClient *storage.Client, doData *DoDa
 
 	doData.Bucket = userInput(
 		"Enter a name for your new GCS bucket",
-		inputValidator{
-			failMessage: "Bucket with that name already exists",
-			validatorFunc: func(bucketName string) error {
-				bucket := storageClient.Bucket(bucketName)
-				_, err := bucket.Attrs(ctx)
+		// Validator: Bucket with that name must not already exist
+		func(bucketName string) error {
+			bucket := storageClient.Bucket(bucketName)
+			_, err := bucket.Attrs(ctx)
 
-				// Bucket does not exist
-				if err == storage.ErrBucketNotExist {
-					return nil
-				}
-
-				// Bucket exists and user has access to it
-				if err == nil {
-					return errors.New("Bucket already exists")
-				}
-
-				// Bucket exists and user does not have access to it
-				if errGoogleAPI, ok := err.(*googleapi.Error); ok && errGoogleAPI.Code == http.StatusForbidden {
-					return errors.New("Bucket already exists")
-				}
-
-				// Something else went wrong (but the bucket does not exist)
+			// Bucket does not exist
+			if err == storage.ErrBucketNotExist {
 				return nil
-			},
+			}
+
+			// Bucket exists and user has access to it
+			if err == nil {
+				failMsg := "Bucket already exists, and you have permission to access it"
+				return errors.New(failMsg)
+			}
+
+			// Bucket exists and user does not have access to it
+			if errGoogleAPI, ok := err.(*googleapi.Error); ok && errGoogleAPI.Code == http.StatusForbidden {
+				failMsg := "Bucket already exists, but you do not have permission to access it"
+				return errors.New(failMsg)
+			}
+
+			// Something else went wrong (but the bucket does not exist, so validator should pass)
+			return nil
 		},
-		inputValidator{
-			failMessage: "Bucket names must contain only lowercase letters, numbers, dashes (-), underscores (_), and dots (.)",
-			validatorFunc: func(bucketName string) error {
+		// Validator: Name must not contain illegal characters
+		func(bucketName string) error {
 
-				pattern := "^[a-z1-9._-]+$"
+			pattern := "^[a-z1-9._-]+$"
 
-				if match, _ := regexp.MatchString(pattern, bucketName); !match {
-					return errors.New("Bucket name has illegal chars")
-				}
+			if match, _ := regexp.MatchString(pattern, bucketName); !match {
+				failMsg := "Bucket names must contain only lowercase letters, numbers, dashes (-), underscores (_), and dots (.)"
+				return errors.New(failMsg)
+			}
 
-				return nil
-			},
+			return nil
 		},
-		inputValidator{
-			failMessage: "Bucket names must start and end with a number or letter",
-			validatorFunc: func(bucketName string) error {
+		// Validator: Name must start and end with a letter
+		func(bucketName string) error {
 
-				startPattern := "^[a-z1-9]"
+			startPattern := "^[a-z1-9]"
 
-				if match, _ := regexp.MatchString(startPattern, bucketName); !match {
-					return errors.New("Bucket name does not start with number or lowercase letter")
-				}
+			failMsg := "Bucket names must start and end with a number or letter"
 
-				endPattern := "[a-z1-9]$"
+			if match, _ := regexp.MatchString(startPattern, bucketName); !match {
+				return errors.New(failMsg)
+			}
 
-				if match, _ := regexp.MatchString(endPattern, bucketName); !match {
-					return errors.New("Bucket name does not end with number or lowercase letter")
-				}
+			endPattern := "[a-z1-9]$"
 
-				return nil
-			},
+			if match, _ := regexp.MatchString(endPattern, bucketName); !match {
+				return errors.New(failMsg)
+			}
+
+			return nil
 		},
-		inputValidator{
-			failMessage: "Bucket names must contain 3 to 63 characters",
-			validatorFunc: func(bucketName string) error {
+		// Validator: Name must be appropriate length
+		func(bucketName string) error {
 
-				if len(bucketName) < 3 || len(bucketName) > 63 {
-					return errors.New("Bucket name is illegal length")
-				}
+			if len(bucketName) < 3 || len(bucketName) > 63 {
+				failMsg := "Bucket names must contain 3 to 63 characters"
+				return errors.New(failMsg)
+			}
 
-				return nil
-			},
+			return nil
 		},
-		inputValidator{
-			failMessage: "Bucket names cannot begin with the 'goog' prefix",
-			validatorFunc: func(bucketName string) error {
+		// Validator: Name must not have illegal substrings
+		func(bucketName string) error {
 
-				if strings.HasPrefix(bucketName, "goog") {
-					return errors.New("Bucket name starts with 'goog'")
-				}
+			if strings.HasPrefix(bucketName, "goog") {
+				failMsg := "Bucket names cannot begin with the 'goog' prefix"
+				return errors.New(failMsg)
+			}
 
-				return nil
-			},
+			return nil
 		},
 	)
 }
@@ -172,20 +169,40 @@ func makeServiceAccount(ctx context.Context, tokSource oauth2.TokenSource, stora
 
 	serviceAccountJSONPath := userInput(
 		"Enter a path on your local machine to save your service account credentials",
-		inputValidator{
-			failMessage: "Directory does not exist",
-			validatorFunc: func(s string) error {
+		// Validator: Directories in path must already exist
+		func(s string) error {
 
-				dir, _ := filepath.Split(s)
+			dir, filename := filepath.Split(s)
 
-				if _, err := os.Stat(dir); os.IsNotExist(err) {
-					return err
+			if isDirectoryName(filename) {
+				stat, err := os.Stat(s)
+
+				if os.IsNotExist(err) {
+					return errors.New("No such directory: " + s)
 				}
 
-				return nil
-			},
+				if !stat.IsDir() {
+					failMsg := fmt.Sprintf("File named %s already exists", filename)
+					return errors.New(failMsg)
+				}
+			} else {
+				if _, err := os.Stat(dir); os.IsNotExist(err) {
+					// Custom error is more readable than error from package os
+					return errors.New("No such directory: " + dir)
+				}
+			}
+
+			return nil
 		},
 	)
+
+	// Add filename to path if last element in path represents directory name
+	_, serviceAccountJSONFilename := filepath.Split(serviceAccountJSONPath)
+	if isDirectoryName(serviceAccountJSONFilename) {
+		serviceAccountJSONPath = filepath.Join(serviceAccountJSONPath, createServiceAccountReq.AccountId+".json")
+	}
+
+	fmt.Println("Saving service account credentials at " + serviceAccountJSONPath)
 
 	f, err := os.Create(serviceAccountJSONPath)
 
@@ -200,6 +217,17 @@ func makeServiceAccount(ctx context.Context, tokSource oauth2.TokenSource, stora
 	}
 
 	return serviceAccount, nil
+}
+
+// isDirectoryName returns true if filename is a directory name.
+// (N.B. We assume that if the filename has no extension, then the user intended last element in path to represent a directory)
+func isDirectoryName(s string) bool {
+	ls := strings.Split(s, ".")
+
+	// No extension if there is no "." char
+	return len(ls) == 1 ||
+		// No extension if there is only one "." char, and that char is a prefix (because "." prefix represents hidden file, not extension)
+		(len(ls) == 2 && strings.HasPrefix(s, "."))
 }
 
 func genServiceAccountID(doData DoData) string {
