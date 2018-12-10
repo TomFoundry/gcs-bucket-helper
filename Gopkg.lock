@@ -19,17 +19,15 @@
   version = "v0.31.0"
 
 [[projects]]
-  digest = "1:fce9b252e844078774d9bc017acfba0e961e104f268859b23e277d3d23270202"
+  digest = "1:19e1717be26f549febea402e08b46db7919d164324a24ff67e0c81dfb11316b8"
   name = "github.com/golang/protobuf"
   packages = [
-    "jsonpb",
     "proto",
     "protoc-gen-go/descriptor",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
     "ptypes/empty",
-    "ptypes/struct",
     "ptypes/timestamp",
   ]
   pruneopts = "UT"
@@ -248,9 +246,9 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "cloud.google.com/go/iam",
     "cloud.google.com/go/iam/admin/apiv1",
     "cloud.google.com/go/storage",
-    "github.com/golang/protobuf/jsonpb",
     "github.com/google/uuid",
     "github.com/pkg/errors",
     "golang.org/x/oauth2",
