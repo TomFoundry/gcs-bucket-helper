@@ -103,16 +103,28 @@ workflows:
   version: 2
   build_gcs_helper:
     jobs:
-      - setup
+      - setup:
+          filters:
+            tags:
+              only: /.*/
       - build_linux:
           requires:
           - setup
+          filters:  # required since `upload_them_all` has tag filters AND requires `build_linux`
+            tags:
+              only: /.*/
       - build_darwin:
           requires:
           - setup
+          filters:  # required since `upload_them_all` has tag filters AND requires `build_darwin`
+            tags:
+              only: /.*/
       - build_windows:
           requires:
           - setup
+          filters:  # required since `upload_them_all` has tag filters AND requires `build_windows`
+            tags:
+              only: /.*/
       - upload_them_all:
           requires:
             - build_linux
@@ -120,7 +132,7 @@ workflows:
             - build_windows
           # This job runs for no branches and only for version tags following the x.y.z format
           filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
             branches:
                 ignore: /.*/
-            tags:
-              only: /^v?\d+\.\d+\.\d+$/
