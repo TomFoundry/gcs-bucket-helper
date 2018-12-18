@@ -38,7 +38,7 @@ func (e *executorImpl) ExecuteGCP(tok *oauth2.Token, userEmail string, onComplet
 		log.Fatal("Failed executing GCP sequence: ", err)
 	}
 
-	fmt.Println("- We need to log in to Athera.")
+	fmt.Println("- We need to log in to Athera to get permission to connect the new bucket.")
 	fmt.Println("- Please navigate to:")
 	fmt.Printf(onCompleteURL)
 }
@@ -49,6 +49,6 @@ func (e *executorImpl) ExecuteAthera(tok *oauth2.Token) {
 		log.Fatal("Failed executing Athera sequence: ", err)
 	}
 
-	fmt.Println("- Process is complete. Thanks")
+	fmt.Println("- Process is complete. Your new bucket is now connected to Athera.")
 	os.Exit(0)
 }

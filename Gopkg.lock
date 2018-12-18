@@ -242,6 +242,14 @@
   revision = "df014850f6dee74ba2fc94874043a9f3f75fbfd8"
   version = "v1.17.0"
 
+[[projects]]
+  branch = "v1"
+  digest = "1:5425e17c4cc1385fefa6d3767cc30f307cd9ebb22be757af0f8787da647b2349"
+  name = "gopkg.in/mattes/go-expand-tilde.v1"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "cb884138e64c9a8bf5c7d6106d74b0fca082df0c"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -256,6 +264,7 @@
     "google.golang.org/api/googleapi",
     "google.golang.org/api/option",
     "google.golang.org/genproto/googleapis/iam/admin/v1",
+    "gopkg.in/mattes/go-expand-tilde.v1",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

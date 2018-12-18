@@ -42,8 +42,8 @@ func (s *Server) Serve() error {
 	http.HandleFunc("/"+EndpointAtheraLogin, s.atheraLogin)
 	http.HandleFunc("/"+EndpointAtheraAuth, s.atheraAuth)
 
-	fmt.Println("- This utility will create a service account and storage bucket in Google Cloud Platform.")
-	fmt.Println("- We need to log in to Google.")
+	fmt.Println("- This utility will create a service account and storage bucket in Google Cloud Platform (GCP), then connect it to one of your groups in Athera.")
+	fmt.Println("- We need to log in to Google to get permission to create the bucket.")
 	fmt.Println("- Please navigate to:")
 	fmt.Printf("http://localhost:%s/%s\n", s.port, EndpointGoogleLogin)
 

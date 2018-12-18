@@ -93,7 +93,8 @@ func buildSelectGroupMsg(groups []*models.Group, lineage models.GroupLineage) st
 			}
 		}
 
-		msg += "\nSelect Group:\n"
+		msg += ".\n"
+		msg += "Select Group:\n"
 	} else {
 		msg += "Select Org:\n"
 	}
@@ -107,7 +108,7 @@ func buildSelectGroupMsg(groups []*models.Group, lineage models.GroupLineage) st
 	}
 
 	if len(lineage) > 0 {
-		msg += fmt.Sprintf("\n%d) [Mount in %s]", len(groups)+1, lineage[0].Name)
+		msg += fmt.Sprintf("\n%d) [Mount in %s]", len(groups)+1, lineage.Leaf().Name)
 	}
 
 	return msg

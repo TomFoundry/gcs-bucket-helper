@@ -21,3 +21,7 @@
 [[constraint]]
   name = "github.com/pkg/errors"
   version = "0.8.0"
+
+[[constraint]]
+  name = "gopkg.in/mattes/go-expand-tilde.v1"
+  branch = "v1"

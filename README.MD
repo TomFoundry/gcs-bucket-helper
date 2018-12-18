@@ -1,6 +1,6 @@
 # Athera GCS Bucket Helper
 
-Athera GCS Bucket Helper creates a GCS bucket and service account, then connects the bucket to Athera.
+Athera GCS (Google Cloud Storage) Bucket Helper creates a bucket and service account in GCP (Google Cloud Platform), then connects the bucket to Athera.
 
 ## Build Command
 go build -ldflags "-X main.googleAppID=<GCP API Credentials Client ID> -X main.googleAppPseudoSecret=<GCP API Credentials Client Secret> -X main.atheraAppID=<Athera API Credentials Client ID> -X main.voyagerURL=<Voyager URL> -X main.atheraAuthURL=<Athera Auth URL> -X main.atheraTokenURL=<Athera Token URL>"

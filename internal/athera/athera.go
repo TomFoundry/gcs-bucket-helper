@@ -47,8 +47,8 @@ func (a *Athera) Execute(tok *oauth2.Token, data *executor.Data) error {
 	}
 
 	fmt.Println("") // Line break for legibility
-	fmt.Println("- We are going to create a storage driver linked to your GCS bucket")
-	fmt.Println("- First we need to select a group to link with the storage driver")
+	fmt.Println("- We are going to connect the bucket to Athera.")
+	fmt.Println("- First we need to select a group to connect the bucket to.")
 
 	org := selectGroupFromInput(orgs, nil)
 
@@ -58,7 +58,7 @@ func (a *Athera) Execute(tok *oauth2.Token, data *executor.Data) error {
 		return err
 	}
 
-	fmt.Println("- Selected group", selectedGroup.Name)
+	fmt.Printf("- Selected group %s.\n", selectedGroup.Name)
 
 	return a.createDriver(data, selectedGroup)
 }
@@ -66,9 +66,15 @@ func (a *Athera) Execute(tok *oauth2.Token, data *executor.Data) error {
 func (a *Athera) createDriver(data *executor.Data, group *models.Group) error {
 
 	driverName := input.Recv(
-		"Please choose a name for your storage driver",
+		fmt.Sprintf("Please choose a name for the location of the bucket (or leave blank to use %s):", data.GCP.Bucket),
 		// Validator: Only legal characters are alphanumeric, "_", "-", and "."
 		func(s string) error {
+
+			// Use value from data.GCP.Bucket
+			if s == "" {
+				return nil
+			}
+
 			match, _ := regexp.MatchString("^[a-zA-Z0-9_.-]+$", s)
 
 			if !match {
@@ -78,6 +84,10 @@ func (a *Athera) createDriver(data *executor.Data, group *models.Group) error {
 			return nil
 		},
 	)
+
+	if driverName == "" {
+		driverName = data.GCP.Bucket
+	}
 
 	_, err := a.client.CreateStorageDriver(group.ID, driverName, data.GCP.Bucket, data.GCP.ServiceAccountPrivateData)
 
