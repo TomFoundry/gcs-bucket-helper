@@ -3,10 +3,10 @@ package athera
 import (
 	"fmt"
 	"net/url"
-	"regexp"
 
 	"github.com/athera-io/gcs-bucket-helper/internal/athera/client"
 	"github.com/athera-io/gcs-bucket-helper/internal/athera/models"
+	validateDriver "github.com/athera-io/gcs-bucket-helper/internal/athera/validate/driver"
 	"github.com/athera-io/gcs-bucket-helper/internal/executor"
 	"github.com/athera-io/gcs-bucket-helper/internal/input"
 	"github.com/pkg/errors"
@@ -67,22 +67,7 @@ func (a *Athera) createDriver(data *executor.Data, group *models.Group) error {
 
 	driverName := input.Recv(
 		fmt.Sprintf("Please choose a name for the location of the bucket (or leave blank to use %s):", data.GCP.Bucket),
-		// Validator: Only legal characters are alphanumeric, "_", "-", and "."
-		func(s string) error {
-
-			// Use value from data.GCP.Bucket
-			if s == "" {
-				return nil
-			}
-
-			match, _ := regexp.MatchString("^[a-zA-Z0-9_.-]+$", s)
-
-			if !match {
-				return errors.New("Mount name may only contain alphanumeric, hyphen ('-'), underscore ('_'), and period ('.') characters")
-			}
-
-			return nil
-		},
+		validateDriver.LegalChars,
 	)
 
 	if driverName == "" {
