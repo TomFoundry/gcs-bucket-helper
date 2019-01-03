@@ -7,12 +7,12 @@ import (
 	"github.com/athera-io/gcs-bucket-helper/internal/athera/models"
 	"github.com/athera-io/gcs-bucket-helper/internal/input"
 	"github.com/pkg/errors"
+
+	validateGroup "github.com/athera-io/gcs-bucket-helper/internal/athera/validate/group"
 )
 
 func (a *Athera) selectGroup(org *models.Group) (*models.Group, error) {
-	lineage := models.GroupLineage{
-		org,
-	}
+	lineage := models.NewGroupLineage(org)
 
 	for {
 		leaf := lineage.Leaf()
@@ -42,29 +42,7 @@ func selectGroupFromInput(groups []*models.Group, lineage models.GroupLineage) *
 	s := input.Recv(
 		buildSelectGroupMsg(groups, lineage),
 		func(s string) error {
-			// Validator: Must be integer greater than zero, and less than 1 + length of groups
-
-			i, err := strconv.Atoi(s)
-
-			if err != nil {
-				return errors.New("Input must be an integer")
-			}
-
-			if i < 1 {
-				return errors.New("Input must be greater than zero")
-			}
-
-			max := len(groups)
-
-			if len(lineage) > 0 {
-				max++
-			}
-
-			if i > max {
-				return fmt.Errorf("Input must be less than or equal to %d", max)
-			}
-
-			return nil
+			return validateGroup.LegalIndex(s, groups, lineage)
 		},
 	)
 
