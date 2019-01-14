@@ -45,7 +45,9 @@ func (s *Server) Serve() error {
 	fmt.Println("- This utility will create a service account and storage bucket in Google Cloud Platform (GCP), then connect it to one of your groups in Athera.")
 	fmt.Println("- We need to log in to Google to get permission to create the bucket.")
 	fmt.Println("- Please navigate to:")
-	fmt.Printf("http://localhost:%s/%s\n", s.port, EndpointGoogleLogin)
+	// fmt.Printf("http://localhost:%s/%s\n", s.port, EndpointGoogleLogin) // TODO: Reinstate
+
+	fmt.Printf("http://localhost:%s/%s\n", s.port, EndpointAtheraLogin)
 
 	return http.ListenAndServe(":"+s.port, nil)
 }

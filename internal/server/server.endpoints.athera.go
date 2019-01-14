@@ -15,6 +15,8 @@ func (s *Server) atheraLogin(w http.ResponseWriter, r *http.Request) {
 
 	redirectURL := getLoginURL(state, s.atheraCfg, oauth2.SetAuthURLParam("audience", "https://public.elara.io"))
 
+	fmt.Println("redirectURL: ", redirectURL)
+
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }
 
