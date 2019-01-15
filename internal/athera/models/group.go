@@ -12,6 +12,15 @@ type Group struct {
 // GroupLineage represents a set of groups connected by consecutive parent-child relationships, where idx 0 is the org (i.e. has no parent)
 type GroupLineage []*Group
 
+// NewGroupLineage returns a GroupLineage
+func NewGroupLineage(groups ...*Group) GroupLineage {
+	lineage := GroupLineage{}
+
+	lineage = append(lineage, groups...)
+
+	return lineage
+}
+
 // Leaf returns the last group in the lineage
 func (gl GroupLineage) Leaf() *Group {
 	if len(gl) == 0 {

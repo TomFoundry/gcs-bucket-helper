@@ -86,6 +86,26 @@ jobs:
           root: .
           paths:
           - ./artifacts/
+  test:
+    working_directory: /go/src/github.com/athera-io/gcs-bucket-helper
+    docker:
+      - image: golang:1.10
+    steps:
+    - checkout
+    - restore_cache:
+        keys:
+        - v1-dep-gcs-bucket-helper-{{ .Branch }}-{{ checksum "Gopkg.lock" }}
+    - run: go vet ./...
+    - run: go get -u github.com/jstemmer/go-junit-report
+    - run: |               
+              mkdir -p /tmp/tests
+              go test -v ./... 2>&1 > results.txt || true
+              cat results.txt > /tmp/tests/results.txt
+              cat results.txt | go-junit-report -set-exit-code > /tmp/tests/report.xml
+    - store_test_results:
+        path: /tmp/tests
+    - store_artifacts:
+        path: /tmp/tests
   upload_them_all:
     working_directory: /go/src/github.com/athera-io/gcs-bucket-helper
     docker:
@@ -125,6 +145,9 @@ workflows:
           filters:  # required since `upload_them_all` has tag filters AND requires `build_windows`
             tags:
               only: /.*/
+      - test:
+          requires:
+          - setup
       - upload_them_all:
           requires:
             - build_linux
